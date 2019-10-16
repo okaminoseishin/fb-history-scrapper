@@ -48,9 +48,9 @@ class FacebookSpider(scrapy.Spider):
                 '//div/div/div/span/text()').extract())
             time.append(scrapy.Selector(text=message).xpath(
                 '//div/div/abbr/text()').extract())
-        response.meta['conversation']['person'].insert(0, person)
-        response.meta['conversation']['text'].insert(0, text)
-        response.meta['conversation']['time'].insert(0, time)
+        response.meta['conversation']['person'].extend(person[::-1])
+        response.meta['conversation']['text'].extend(text[::-1])
+        response.meta['conversation']['time'].extend(time[::-1])
         try:
             yield scrapy.Request(
                 url='https://mbasic.facebook.com{}'.format(
@@ -65,4 +65,3 @@ class FacebookSpider(scrapy.Spider):
                 'text': response.meta['conversation']['text'],
                 'time': response.meta['conversation']['time']
             }).to_json(filename, orient='records', lines=True)
-            self.person, self.text, self.time = list(), list(), list()
